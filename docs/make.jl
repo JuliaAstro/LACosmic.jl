@@ -21,4 +21,5 @@ makedocs(;
 deploydocs(;
     repo="github.com/mileslucas/LACosmic.jl",
     devbranch="main",
+    push_preview=true
 )
