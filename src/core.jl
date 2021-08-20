@@ -18,7 +18,9 @@ function lacosmic(
     clean_image = muladd.(data, gain, background)
 
     # update mask with saturated stars
-    mask = @. mask | (clean_image > saturation_level)
+    medfilt = mapwindow(median, clean_image, (5, 5))
+    sat_mask = @. (clean_image ≥ saturation_level) & (medfilt > (saturation_level * 0.1))
+    mask = dilate!(mask, 3) .| dilate!(sat_mask, 5)
     good_data = @view clean_image[.!mask]
 
     # get the default background level for large cosmic rays
@@ -44,15 +46,15 @@ function lacosmic(
         # build fine structure image
         f = mapwindow(median, clean_image, (3, 3))
         back = mapwindow(median, clean_image, (7, 7))
-        f = @. (f - medfilt) / (block_size * sqrt(medfilt + readnoise^2))
+        f = @. (f - back) / (block_size * sqrt(medfilt + readnoise^2))
         
         # find candidate cosmic rays
         cosmics = @. !mask & (snr_prime > sigma_clip) & ((snr_prime / f) > objlim)
 
         # determine neighborhood
-        cosmics = mapwindow(any, cosmics, (3, 3))
+        cosmics = dilate!(cosmics, 3)
         @. cosmics &= !mask & (snr_prime > sigma_clip)
-        cosmics = mapwindow(any, cosmics, (3, 3))
+        cosmics = dilate!(cosmics, 3)
         @. cosmics &= !mask & (snr_prime > (sigma_clip * 0.3))
         ray_mask .|= cosmics
 
@@ -64,7 +66,7 @@ function lacosmic(
             break
         # otherwise, clean the image
         else
-            clean_image = mapwindow(w -> max(mean(w), background_level), clean_image, (5, 5), indices=findall(ray_mask))
+            clean_image = clean!(clean_image, ray_mask, mask, 5, background_level)
         end
     end
     return clean_image, ray_mask
@@ -81,4 +83,25 @@ function rebin(arr)
         out[idx] = val
     end
     return out
+end
+
+function dilate!(mask, size)
+    half_width = Int((size - 1) / 2)
+    @inbounds for idx in findall(mask)
+        strides = map(i -> max(1, (i - half_width)):min(lastindex(mask, 1), (i + half_width)), idx.I)
+        mask[strides...] .= true
+    end
+    return mask
+end
+
+function clean!(image, crmask, mask, size, background_level)
+    half_width = Int((size - 1) / 2)
+    @inbounds for idx in findall(crmask)
+        strides = map(i -> max(1, (i - half_width)):min(lastindex(mask, 1), (i + half_width)), idx.I)
+        window = @view image[strides...]
+        m = @views crmask[strides...] .| mask[strides...]
+        masked_mean = mean(view(window, m))
+        image[idx] = max(masked_mean, background_level)
+    end
+    return image
 end
