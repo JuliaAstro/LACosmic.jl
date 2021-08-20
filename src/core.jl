@@ -11,8 +11,8 @@ function lacosmic(
         maxiter=4,
         gain=1,
         background=0,
-        saturation_level=2^16
-        readnoise=nothing,
+        saturation_level=2^16,
+        readnoise=0,
         block_size=2)
     # convert image to electrons using gain and background if previously subtracted
     clean_image = muladd.(data, gain, background)
@@ -32,7 +32,7 @@ function lacosmic(
     for iteration in 1:maxiter
         # subsample, convolve, clip, and rebin
         sub_img = subsample(clean_image, block_size)
-        conv_img = imfilter(sub_img, Kernel.Laplacian((false, false)), border="symmetric")
+        conv_img = imfilter(sub_img, Kernel.Laplacian((false, false)), "symmetric")
         Lplus = rebin(conv_img)
 
         # build Laplacian S/N map
@@ -47,19 +47,20 @@ function lacosmic(
         f = @. (f - medfilt) / (block_size * sqrt(medfilt + readnoise^2))
         
         # find candidate cosmic rays
-        @. cosmics = !mask & snr_prime > sigma_clip & (snr_prime / f) > objlim
+        cosmics = @. !mask & (snr_prime > sigma_clip) & ((snr_prime / f) > objlim)
 
         # determine neighborhood
         cosmics = mapwindow(any, cosmics, (3, 3))
-        @. cosmics &= !mask & snr_prime > sigma_clip
+        @. cosmics &= !mask & (snr_prime > sigma_clip)
         cosmics = mapwindow(any, cosmics, (3, 3))
-        @. cosmics &= !mask & snr_prime > (sigma_clip * 0.3)
+        @. cosmics &= !mask & (snr_prime > (sigma_clip * 0.3))
         ray_mask .|= cosmics
 
-        @debug "iteration $iteration: found $(count(cosmics)) bad pixels this iteration"
+        num_cosmics = count(cosmics)
+        @debug "iteration $iteration: found $num_cosmics bad pixels this iteration"
         
         # if no more cosmics, break
-        if iszero(count(comsmics))
+        if iszero(num_cosmics)
             break
         # otherwise, clean the image
         else
