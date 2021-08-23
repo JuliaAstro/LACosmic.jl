@@ -40,7 +40,7 @@ julia> sub
 subsample(parent, block_size=2) = SubsampledArray(parent, block_size)
 
 Base.parent(arr::SubsampledArray) = arr.parent
-Base.size(arr::SubsampledArray) = size(parent(arr)) .* 2
+Base.size(arr::SubsampledArray) = size(parent(arr)) .* arr.block_size
 
 @inline block_idx(idx, size) = ceil(Int, idx / size)
 

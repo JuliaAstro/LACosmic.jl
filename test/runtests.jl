@@ -84,6 +84,13 @@ end
     @test dilated == expected
 end
 
+@testset "rebin" for block_size in [2, 3]
+    data = randn(rng, Float32, 512, 512) .+ 100
+    sub = @inferred LACosmic.subsample(data, block_size)
+    binned = @inferred LACosmic.rebin(sub, block_size)
+    @test binned ≈ data
+end
+
 @testset "LACosmic algorithm" for T in [Float32, Float64]
     input = make_data(T, 1001)
     output, mask = @inferred lacosmic(input.image; sigma_clip=6, neighbor_thresh=1, readnoise=10)

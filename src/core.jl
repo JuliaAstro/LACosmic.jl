@@ -72,18 +72,24 @@ function lacosmic(
     return clean_image, ray_mask
 end
 
-function rebin(arr, block_size)
+@inline function _rebin_inds(idx, ax, block_size)
+    start = (idx - first(ax)) * block_size + first(ax)
+    finish = start + block_size - 1
+    return start:finish
+end
+
+function rebin(reduction, arr, block_size)
     dims = Int.(size(arr) ./ block_size)
     out = similar(arr, dims)
     @inbounds for idx in CartesianIndices(out)
-        val = max(0, arr[idx.I[1] * 2 - 1, idx.I[2] * 2 - 1]) +
-              max(0, arr[idx.I[1] * 2 - 1, idx.I[2] * 2]) +
-              max(0, arr[idx.I[1] * 2, idx.I[2] * 2 - 1]) +
-              max(0, arr[idx.I[1] * 2, idx.I[2] * 2])
-        out[idx] = val
+        rows = _rebin_inds(idx.I[1], axes(arr, 1), block_size)
+        cols = _rebin_inds(idx.I[2], axes(arr, 2), block_size)
+        out[idx] = reduction(v -> max(zero(v), v), view(arr, rows, cols))
     end
     return out
 end
+
+rebin(arr, block_size) = rebin(mean, arr, block_size)
 
 function dilate!(mask, size)
     half_width = Int((size - 1) / 2)
@@ -94,15 +100,17 @@ function dilate!(mask, size)
     return mask
 end
 
-function clean(image, crmask, mask, size, background_level)
+function clean(reduction, image, crmask, mask, size, background_level)
     half_width = Int((size - 1) / 2)
     out = copy(image)
     @inbounds for idx in findall(crmask)
         strides = map(i -> max(1, (i - half_width)):min(lastindex(mask, 1), (i + half_width)), idx.I)
         window = @view image[strides...]
         m = @views @. !(crmask[strides...] | mask[strides...])
-        masked_mean = mean(view(window, m))
-        out[idx] = max(masked_mean, background_level)
+        masked_stat = reduction(view(window, m))
+        out[idx] = max(masked_stat, background_level)
     end
     return out
 end
+
+clean(image, crmask, mask, size, background_level) = clean(mean, image, crmask, mask, size, background_level)
