@@ -5,9 +5,9 @@ using StaticArrays
 function lacosmic(
         data::AbstractMatrix;
         mask=falses(size(data)),
-        contrast=2.0,
+        contrast=5.0,
         sigma_clip=4.5,
-        objlim=2,
+        neighbor_thresh=0.3,
         maxiter=4,
         gain=1,
         background=0,
@@ -18,8 +18,8 @@ function lacosmic(
     clean_image = muladd.(data, gain, background)
 
     # update mask with saturated stars
-    medfilt = mapwindow(median, clean_image, (5, 5))
-    sat_mask = @. (clean_image ≥ saturation_level) & (medfilt > (saturation_level * 0.1))
+    error_image = mapwindow(median, clean_image, (5, 5))
+    sat_mask = @. (clean_image ≥ saturation_level) & (error_image > (saturation_level * 0.1))
     mask = dilate!(mask, 3) .| dilate!(sat_mask, 5)
     good_data = @view clean_image[.!mask]
 
@@ -34,28 +34,28 @@ function lacosmic(
     for iteration in 1:maxiter
         # subsample, convolve, clip, and rebin
         sub_img = subsample(clean_image, block_size)
-        conv_img = imfilter(sub_img, Kernel.Laplacian((false, false)), "symmetric")
-        Lplus = rebin(conv_img)
+        conv_img = imfilter(sub_img, Kernel.Laplacian(), "symmetric")
+        Lplus = rebin(conv_img, block_size)
 
         # build Laplacian S/N map
-        medfilt = mapwindow(median, clean_image, (5, 5))
-        snr =  @. Lplus / (block_size * sqrt(medfilt + readnoise^2))
+        error_img = mapwindow(median, clean_image, (5, 5))
+        snr =  @. Lplus / (block_size * sqrt(error_img + readnoise^2))
         # remove large structions
         snr_prime = snr .- mapwindow(median, snr, (5, 5))
 
         # build fine structure image
-        f = mapwindow(median, clean_image, (3, 3))
-        back = mapwindow(median, clean_image, (7, 7))
-        f = @. (f - back) / (block_size * sqrt(medfilt + readnoise^2))
+        med3 = mapwindow(median, clean_image, (3, 3))
+        med7 = mapwindow(median, med3, (7, 7))
+        f = @. (med3 - med7) / (block_size * sqrt(error_img + readnoise^2))
         
         # find candidate cosmic rays
-        cosmics = @. !mask & (snr_prime > sigma_clip) & ((snr_prime / f) > objlim)
+        cosmics = @. !mask & (snr_prime > sigma_clip) & ((snr_prime / f) > contrast)
 
         # determine neighborhood
         cosmics = dilate!(cosmics, 3)
         @. cosmics &= !mask & (snr_prime > sigma_clip)
         cosmics = dilate!(cosmics, 3)
-        @. cosmics &= !mask & (snr_prime > (sigma_clip * 0.3))
+        @. cosmics &= !mask & (snr_prime > (sigma_clip * neighbor_thresh))
         ray_mask .|= cosmics
 
         num_cosmics = count(cosmics)
@@ -66,14 +66,14 @@ function lacosmic(
             break
         # otherwise, clean the image
         else
-            clean_image = clean!(clean_image, ray_mask, mask, 5, background_level)
+            clean_image = clean(clean_image, ray_mask, mask, 5, background_level)
         end
     end
     return clean_image, ray_mask
 end
 
-function rebin(arr)
-    dims = Int.(size(arr) ./ 2)
+function rebin(arr, block_size)
+    dims = Int.(size(arr) ./ block_size)
     out = similar(arr, dims)
     @inbounds for idx in CartesianIndices(out)
         val = max(0, arr[idx.I[1] * 2 - 1, idx.I[2] * 2 - 1]) +
@@ -94,14 +94,15 @@ function dilate!(mask, size)
     return mask
 end
 
-function clean!(image, crmask, mask, size, background_level)
+function clean(image, crmask, mask, size, background_level)
     half_width = Int((size - 1) / 2)
+    out = copy(image)
     @inbounds for idx in findall(crmask)
         strides = map(i -> max(1, (i - half_width)):min(lastindex(mask, 1), (i + half_width)), idx.I)
         window = @view image[strides...]
-        m = @views crmask[strides...] .| mask[strides...]
+        m = @views @. !(crmask[strides...] | mask[strides...])
         masked_mean = mean(view(window, m))
-        image[idx] = max(masked_mean, background_level)
+        out[idx] = max(masked_mean, background_level)
     end
-    return image
+    return out
 end
