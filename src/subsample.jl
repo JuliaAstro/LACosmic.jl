@@ -16,6 +16,9 @@ Subsample `array` by the given factor without copying or allocating. This effect
 
 ```jldoctest
 julia> arr = [1 2; 3 4]
+2×2 Matrix{Int64}:
+ 1  2
+ 3  4
 
 julia> sub = LACosmic.subsample(arr)
 4×4 LACosmic.SubsampledArray{Int64, 2, Matrix{Int64}}:

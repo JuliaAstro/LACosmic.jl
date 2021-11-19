@@ -10,7 +10,7 @@ makedocs(;
     sitename="LACosmic.jl",
     format=Documenter.HTML(;
         prettyurls=get(ENV, "CI", "false") == "true",
-        canonical="https://mileslucas.github.io/LACosmic.jl",
+        canonical="https://mileslucas.com/LACosmic.jl",
         assets=String[],
     ),
     pages=[
