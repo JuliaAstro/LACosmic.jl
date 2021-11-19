@@ -34,7 +34,7 @@ there is one exported function: [`lacosmic`](@ref)
 clean_image, mask = lacosmic(image)
 ```
 
-## Benchmarks
+## Performance
 
 This code has been benchmarked against the Cython implementation in [Astro-SCRAPPY](https://github.com/astropy/astroscrappy). This benchmark simply computes the time it takes to run the LACosmic algorithm with different image sizes. The size is the length of one dimension of the image, so the expected scaling should be ``\propto N^2``. The code can be found in `bench/benchmark.jl`. Here is the information for my system-
 
