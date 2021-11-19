@@ -4,8 +4,9 @@ CurrentModule = LACosmic
 
 # LACosmic.jl
 
-[![Code](https://img.shields.io/badge/Code-GitHub-black.svg))](https://github.com/JuliaAstro/LACosmic.jl)
+[![Code](https://img.shields.io/badge/Code-GitHub-black.svg)](https://github.com/JuliaAstro/LACosmic.jl)
 [![Build Status](https://github.com/JuliaAstro/LACosmic.jl/workflows/CI/badge.svg?branch=main)](https://github.com/JuliaAstro/LACosmic.jl/actions)
+[![PkgEval](https://juliaci.github.io/NanosoldierReports/pkgeval_badges/L/LACosmic.svg)](https://juliaci.github.io/NanosoldierReports/pkgeval_badges/report.html)
 [![Coverage](https://codecov.io/gh/JuliaAstro/LACosmic.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/JuliaAstro/LACosmic.jl)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
