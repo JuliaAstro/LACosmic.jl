@@ -6,6 +6,6 @@
 
 ---
 
-```@autodocs
-Modules = [LACosmic]
+```@docs
+lacosmic
 ```
