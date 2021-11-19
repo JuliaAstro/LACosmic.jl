@@ -1,8 +1,9 @@
 module LACosmic
 
-using Photometry.Background: LocationEstimator, RMSEstimator
+using Statistics
 using StaticArrays
-# using StaticKernels
+using StaticKernels
+using StaticKernels: ExtensionConstant, ExtensionReplicate
 
 export lacosmic
 

@@ -53,3 +53,25 @@ end
     scaled_idxs = block_idx.(idxs, arr.block_size)
     return setindex!(parent(arr), value, scaled_idxs...)
 end
+
+# rebinning
+
+@inline function _rebin_inds(idx, ax, block_size)
+    start = (idx - first(ax)) * block_size + first(ax)
+    finish = start + block_size - 1
+    return start:finish
+end
+
+function rebin(reduction, arr, block_size)
+    dims = Int.(size(arr) ./ block_size)
+    out = similar(arr, dims)
+    @inbounds for idx in CartesianIndices(out)
+        rows = _rebin_inds(idx.I[1], axes(arr, 1), block_size)
+        cols = _rebin_inds(idx.I[2], axes(arr, 2), block_size)
+        out[idx] = reduction(v -> max(zero(v), v), view(arr, rows, cols))
+    end
+    return out
+end
+
+rebin(arr, block_size) = rebin(mean, arr, block_size)
+
