@@ -53,7 +53,7 @@ Environment:
 ```
 
 ```@example
-using CSV, DataFrames, Plots # hide
+using CSV, DataFrames, Plots, LaTeXStrings # hide
 using LACosmic # hide
 benchdir = joinpath(dirname(pathof(LACosmic)), "..", "bench") # hide
 results = DataFrame(CSV.File(joinpath(benchdir, "benchmark_results.csv"))) # hide
@@ -64,7 +64,7 @@ plot(results.N_data, [results.t_python results.t_julia]; # hide
     yscale=:log10, shape=:o) # hide
 points = range(extrema(results.N_data)..., length=51) # hide
 factor = results.t_julia[begin] / (results.N_data[begin])^2 # hide
-plot!(points, t -> t^2 * factor, ls=:dash, c=:black, alpha=0.3, lab="N²") # hide
+plot!(points, t -> t^2 * factor, ls=:dash, c=:black, alpha=0.3, lab=L"\propto N^2") # hide
 
 ```
 
