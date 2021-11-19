@@ -1,0 +1,92 @@
+# Examples
+
+## Setup
+
+You will need the following packages installed to replicate this tutorial
+
+```julia
+julia> ]add Distributions LACosmic Plots PSFModels
+```
+
+## Removing bad pixels with LACosmic.jl
+
+First, let's create some fake data with Gaussian sources
+
+```@example clean
+using Random
+
+function make_data(rng, N; N_sources=100, N_cosmics=100)
+    imdata = fill(200.0, (N, N))
+
+    # Add some fake sources
+    for _ in 1:N_sources
+        x = rand(rng, Uniform(1, N + 1))
+        y = rand(rng, Uniform(1, N + 1))
+        brightness = rand(rng, Uniform(1000, 30000)) / (2π * 3.5^2)
+		model = Gaussian(;x, y, fwhm=3.5, amp=brightness)
+        imdata .+= model[axes(imdata)...]
+	end
+
+    # Add the poisson noise
+    imdata .= rand.(rng, Poisson.(imdata))
+
+    # Add readnoise
+    imdata .+= rand(rng, Normal(0, 10), (N, N))
+
+    clean_image = copy(imdata)
+	
+    # Add Nc fake cosmic rays
+    crmask = falses((N, N))
+	for i in 1:N_cosmics
+    	cr_x = round(Int, rand(rng, Uniform(6, N - 5)))
+    	cr_y = round(Int, rand(rng, Uniform(6, N - 5)))
+    	cr_brightnesses = rand(rng, Uniform(1000, 30000))
+    	imdata[cr_y, cr_x] += cr_brightnesses
+    	crmask[cr_y, cr_x] = true
+	end
+
+    # Make a mask where the detected cosmic rays should be
+    return (image=imdata, clean_image, mask=crmask)
+end
+
+rng = MersenneTwister(111)
+data = make_data(rng, 1001)
+```
+
+let's inspect it
+
+```@example clean
+using Plots
+
+function imshow(image; kwargs...)
+	axy, axx = axes(image)
+	heatmap(axy, axx, image; aspect_ratio=1, xlim=extrema(axx), ylim=extrema(axy), kwargs...)
+end
+
+imshow(data.clean_image, title="original image", cscale=:log10)
+```
+
+```@example clean
+imshow(data.image, title="image w/cosmics", cscale=:log10)
+```
+
+now we can clean it using [`lacosmic`](@ref)
+
+```@example clean
+
+clean_image, mask = lacosmic(data.image, sigclip=6, contrast=5)
+```
+
+```@example
+plot(
+    imshow(data.image, title="image w/cosmics", cscale=:log10),
+    imshow(data.image, title="cleaned image", cscale=:log10)
+)
+```
+
+```@example
+plot(
+    imshow(data.mask, title="input mask"),
+    imshow(mask, title="detected cosmics")
+)
+```
