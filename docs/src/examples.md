@@ -13,9 +13,11 @@ julia> ]add Distributions LACosmic Plots PSFModels
 First, let's create some fake data with Gaussian sources
 
 ```@example clean
+using Distributions
+using PSFModels: Gaussian
 using Random
 
-function make_data(rng, N; N_sources=100, N_cosmics=100)
+function make_data(rng, N; N_sources=20, N_cosmics=20)
     imdata = fill(200.0, (N, N))
 
     # Add some fake sources
@@ -49,8 +51,8 @@ function make_data(rng, N; N_sources=100, N_cosmics=100)
     return (image=imdata, clean_image, mask=crmask)
 end
 
-rng = MersenneTwister(111)
-data = make_data(rng, 1001)
+rng = MersenneTwister(808)
+data = make_data(rng, 201)
 ```
 
 let's inspect it
@@ -60,33 +62,43 @@ using Plots
 
 function imshow(image; kwargs...)
 	axy, axx = axes(image)
-	heatmap(axy, axx, image; aspect_ratio=1, xlim=extrema(axx), ylim=extrema(axy), kwargs...)
+	heatmap(axy, axx, image; 
+        aspect_ratio=1,
+        ticks=false,
+        xlim=extrema(axx),
+        ylim=extrema(axy),
+        kwargs...)
 end
 
-imshow(data.clean_image, title="original image", cscale=:log10)
-```
-
-```@example clean
-imshow(data.image, title="image w/cosmics", cscale=:log10)
+plot(
+    imshow(log10.(data.clean_image), title="original image"),
+    imshow(log10.(data.image), title="image w/cosmics"),
+    size=(775, 350)
+)
 ```
 
 now we can clean it using [`lacosmic`](@ref)
 
 ```@example clean
+using LACosmic
 
-clean_image, mask = lacosmic(data.image, sigclip=6, contrast=5)
-```
+clean_image, mask = lacosmic(data.image, sigma_clip=6, contrast=5, neighbor_thresh=1)
 
-```@example
 plot(
-    imshow(data.image, title="image w/cosmics", cscale=:log10),
-    imshow(data.image, title="cleaned image", cscale=:log10)
+    imshow(log10.(data.clean_image), title="original image"),
+    imshow(log10.(clean_image), title="cleaned image"),
+    size=(775, 350)
 )
 ```
 
-```@example
+```@example clean
 plot(
-    imshow(data.mask, title="input mask"),
-    imshow(mask, title="detected cosmics")
+    imshow(data.mask, title="true cosmics", cbar=false),
+    imshow(mask, title="detected cosmics", cbar=false),
+    size=(700, 400)
 )
+```
+
+```@example clean
+data.mask == mask
 ```
