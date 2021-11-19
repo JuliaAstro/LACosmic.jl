@@ -11,11 +11,11 @@ function make_data(rng, T, N; N_sources=100, N_cosmics=100)
     imdata = fill(200.0, (N, N))
 
     # Add some fake sources
-    for i in 1:N_sources
+    for _ in 1:N_sources
         x = rand(rng, Uniform(1, N + 1))
         y = rand(rng, Uniform(1, N + 1))
         brightness = rand(rng, Uniform(1000, 30000)) / (2π * 3.5^2)
-		model = Gaussian(;x=x, y=y, fwhm=3.5, amp=brightness)
+		model = Gaussian(T; x=x, y=y, fwhm=3.5, amp=brightness)
         imdata .+= model[axes(imdata)...]
 	end
 
