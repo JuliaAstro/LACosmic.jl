@@ -28,10 +28,44 @@ To import the library
 using LACosmic
 ```
 
-there is one exported function: `lacosmic`
+there is one exported function: [`lacosmic`](@ref)
 
 ```julia
 clean_image, mask = lacosmic(image)
+```
+
+## Benchmarks
+
+This code has been benchmarked against the Cython implementation in [Astro-SCRAPPY](https://github.com/astropy/astroscrappy). This benchmark simply computes the time it takes to run the LACosmic algorithm with different image sizes. The size is the length of one dimension of the image, so the expected scaling should be ``\propto N^2``. The code can be found in `bench/benchmark.jl`. Here is the information for my system-
+
+```julia
+Julia Version 1.6.0
+Commit f9720dc2eb* (2021-03-24 12:55 UTC)
+Platform Info:
+  OS: macOS (x86_64-apple-darwin20.3.0)
+  CPU: Intel(R) Core(TM) i5-8259U CPU @ 2.30GHz
+  WORD_SIZE: 64
+  LIBM: libopenlibm
+  LLVM: libLLVM-11.0.1 (ORCJIT, skylake)
+Environment:
+  OMP_NUM_THREADS = 1
+  JULIA_NUM_THREADS = 1
+```
+
+```@example
+using CSV, DataFrames, Plots # hide
+using LACosmic # hide
+benchdir = joinpath(dirname(pathof(LACosmic)), "..", "bench") # hide
+results = DataFrame(CSV.File(joinpath(benchdir, "benchmark_results.csv"))) # hide
+
+plot(results.N_data, [results.t_python results.t_julia]; # hide
+    label=["Astro-SCRAPPY" "LACosmic.jl"], leg=:topleft, # hide
+    xlabel="image size", ylabel="time (s)", # hide
+    yscale=:log10, shape=:o) # hide
+points = range(extrema(results.N_data)..., length=51) # hide
+factor = results.t_julia[begin] / (results.N_data[begin])^2 # hide
+plot!(points, t -> t^2 * factor, ls=:dash, c=:black, alpha=0.3, lab="N²") # hide
+
 ```
 
 ## Contributing and Support

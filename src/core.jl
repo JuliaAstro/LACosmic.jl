@@ -83,28 +83,36 @@ function lacosmic(
     # define cosmic ray mask
     ray_mask = falses(size(data))
 
+    # pre-allocate work arrays
+    conv_img = similar(clean_image, size(clean_image) .* 2)
+    var_img = similar(clean_var)
+    snr_prime = similar(clean_image)
+    med3 = similar(clean_image)
+    med7 = similar(clean_image)
+    f = similar(clean_image)
+    cosmics = similar(mask)
 
     # loop for `maxiter` or if no more cosmic rays are found
     for iteration in 1:maxiter
         # subsample, convolve, clip, and rebin
         sub_img = subsample(clean_image, block_size)
-        conv_img = map(LAPLACE_KERNEL, extend(sub_img, ExtensionConstant(zero(T))))
+        map!(LAPLACE_KERNEL, conv_img, extend(sub_img, ExtensionConstant(zero(T))))
         snr = rebin(conv_img, block_size)
 
         # build Laplacian S/N map
-        var_img = map(MEDFILT5_KERNEL, extend(clean_var, ExtensionReplicate()))
-        @. snr /= block_size * sqrt(var_img + background * gain)
+        map!(MEDFILT5_KERNEL, var_img, extend(clean_var, ExtensionReplicate()))
+        @. snr /= block_size * sqrt(max(var_img, T(0.00001)) + background * gain)
         # remove large structions
-        snr_prime = snr .- map(MEDFILT5_KERNEL, extend(snr, ExtensionReplicate()))
+        snr_prime .= snr .- map(MEDFILT5_KERNEL, extend(snr, ExtensionReplicate()))
 
         # build fine structure image
-        med3 = map(MEDFILT3_KERNEL, extend(clean_image, ExtensionReplicate()))
-        med7 = map(MEDFILT7_KERNEL, extend(med3, ExtensionReplicate()))
+        map!(MEDFILT3_KERNEL, med3, extend(clean_image, ExtensionReplicate()))
+        map!(MEDFILT7_KERNEL, med7, extend(med3, ExtensionReplicate()))
         # clip fine structure image since it is a divisor (similar to IRAF)
-        f = @. max((med3 - med7) / sqrt(var_img + background * gain), T(0.01))
+        @. f = max((med3 - med7) / sqrt(var_img + background * gain), T(0.01))
         
         # find candidate cosmic rays
-        cosmics = @. !mask & (snr_prime > sigma_clip) & ((snr_prime / f) > contrast)
+        @. cosmics = !mask & (snr_prime > sigma_clip) & ((snr_prime / f) > contrast)
 
         # determine neighborhood
         cosmics = dilate!(cosmics, 3)
