@@ -8,7 +8,7 @@ CurrentModule = LACosmic
 [![Build Status](https://github.com/JuliaAstro/LACosmic.jl/workflows/CI/badge.svg?branch=main)](https://github.com/JuliaAstro/LACosmic.jl/actions)
 [![PkgEval](https://juliaci.github.io/NanosoldierReports/pkgeval_badges/L/LACosmic.svg)](https://juliaci.github.io/NanosoldierReports/pkgeval_badges/report.html)
 [![Coverage](https://codecov.io/gh/JuliaAstro/LACosmic.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/JuliaAstro/LACosmic.jl)
-[![License](https://img.shields.io/badge/License-BSD-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
+[![License](https://img.shields.io/badge/License-BSD-yellow.svg)](https://opensource.org/licenses/BSD-3-Clause)
 
 Laplacian cosmic-ray detection (L.A.Cosmic) in pure Julia.
 
