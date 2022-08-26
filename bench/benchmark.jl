@@ -3,7 +3,7 @@ using CSV
 using Distributions
 using LACosmic
 using ProgressLogging
-using PSFModels: Gaussian
+using PSFModels: gaussian
 using PyCall
 using Random
 using Statistics
@@ -25,7 +25,7 @@ function make_data(rng, T, N; N_sources=N ÷ 10, N_cosmics=N ÷ 10)
         x = rand(rng, Uniform(1, N + 1))
         y = rand(rng, Uniform(1, N + 1))
         brightness = rand(rng, Uniform(1000, 30000))
-		model = Gaussian(T; x=x, y=y, fwhm=3.5, amp=brightness)
+		model = gaussian(T; x=x, y=y, fwhm=3.5, amp=brightness)
         imdata .+= model[axes(imdata)...]
 	end
 

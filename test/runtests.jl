@@ -1,7 +1,7 @@
 using Distributions
 using ImageFiltering
 using LACosmic
-using PSFModels: Gaussian
+using PSFModels: gaussian
 using StableRNGs
 using Test
 
@@ -15,7 +15,7 @@ function make_data(rng, T, N; N_sources=100, N_cosmics=100)
         x = rand(rng, Uniform(1, N + 1))
         y = rand(rng, Uniform(1, N + 1))
         brightness = rand(rng, Uniform(1000, 30000)) / (2π * 3.5^2)
-		model = Gaussian(T; x=x, y=y, fwhm=3.5, amp=brightness)
+		model = gaussian(T; x=x, y=y, fwhm=3.5, amp=brightness)
         imdata .+= model[axes(imdata)...]
 	end
 

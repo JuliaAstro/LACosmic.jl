@@ -14,7 +14,7 @@ First, let's create some fake data with Gaussian sources
 
 ```@example clean
 using Distributions
-using PSFModels: Gaussian
+using PSFModels: gaussian
 using Random
 
 function make_data(rng, N; N_sources=20, N_cosmics=20)
@@ -25,7 +25,7 @@ function make_data(rng, N; N_sources=20, N_cosmics=20)
         x = rand(rng, Uniform(1, N + 1))
         y = rand(rng, Uniform(1, N + 1))
         brightness = rand(rng, Uniform(1000, 30000)) / (2π * 3.5^2)
-		model = Gaussian(;x, y, fwhm=3.5, amp=brightness)
+		model = gaussian(;x, y, fwhm=3.5, amp=brightness)
         imdata .+= model[axes(imdata)...]
 	end
 
