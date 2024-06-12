@@ -4,8 +4,9 @@
 
 You will need the following packages installed to replicate this tutorial
 
-```julia
-julia> ]add Distributions LACosmic Plots PSFModels
+```julia-repl
+julia> ] # pressing ']' should drop you into pkg-mode
+pkg> add Distributions LACosmic Plots PSFModels
 ```
 
 ## Removing bad pixels with LACosmic.jl
@@ -25,9 +26,9 @@ function make_data(rng, N; N_sources=20, N_cosmics=20)
         x = rand(rng, Uniform(1, N + 1))
         y = rand(rng, Uniform(1, N + 1))
         brightness = rand(rng, Uniform(1000, 30000)) / (2π * 3.5^2)
-		model = gaussian(;x, y, fwhm=3.5, amp=brightness)
+        model = gaussian(;x, y, fwhm=3.5, amp=brightness)
         imdata .+= model[axes(imdata)...]
-	end
+    end
 
     # Add the poisson noise
     imdata .= rand.(rng, Poisson.(imdata))
@@ -36,16 +37,16 @@ function make_data(rng, N; N_sources=20, N_cosmics=20)
     imdata .+= rand(rng, Normal(0, 10), (N, N))
 
     clean_image = copy(imdata)
-	
+
     # Add Nc fake cosmic rays
     crmask = falses((N, N))
-	for i in 1:N_cosmics
-    	cr_x = round(Int, rand(rng, Uniform(6, N - 5)))
-    	cr_y = round(Int, rand(rng, Uniform(6, N - 5)))
-    	cr_brightnesses = rand(rng, Uniform(1000, 30000))
-    	imdata[cr_y, cr_x] += cr_brightnesses
-    	crmask[cr_y, cr_x] = true
-	end
+    for i in 1:N_cosmics
+        cr_x = round(Int, rand(rng, Uniform(6, N - 5)))
+        cr_y = round(Int, rand(rng, Uniform(6, N - 5)))
+        cr_brightnesses = rand(rng, Uniform(1000, 30000))
+        imdata[cr_y, cr_x] += cr_brightnesses
+        crmask[cr_y, cr_x] = true
+    end
 
     # Make a mask where the detected cosmic rays should be
     return (image=imdata, clean_image, mask=crmask)
@@ -61,13 +62,13 @@ let's inspect it
 using Plots
 
 function imshow(image; kwargs...)
-	axy, axx = axes(image)
-	heatmap(axy, axx, image; 
-        aspect_ratio=1,
-        ticks=false,
-        xlim=extrema(axx),
-        ylim=extrema(axy),
-        kwargs...)
+    axy, axx = axes(image)
+    heatmap(axy, axx, image;
+            aspect_ratio=1,
+            ticks=false,
+            xlim=extrema(axx),
+            ylim=extrema(axy),
+            kwargs...)
 end
 
 plot(

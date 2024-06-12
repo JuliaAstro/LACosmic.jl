@@ -15,9 +15,9 @@ function make_data(rng, T, N; N_sources=100, N_cosmics=100)
         x = rand(rng, Uniform(1, N + 1))
         y = rand(rng, Uniform(1, N + 1))
         brightness = rand(rng, Uniform(1000, 30000)) / (2π * 3.5^2)
-		model = gaussian(T; x=x, y=y, fwhm=3.5, amp=brightness)
+        model = gaussian(T; x=x, y=y, fwhm=3.5, amp=brightness)
         imdata .+= model[axes(imdata)...]
-	end
+    end
 
     # Add the poisson noise
     imdata .= rand.(rng, Poisson.(imdata))
@@ -25,17 +25,17 @@ function make_data(rng, T, N; N_sources=100, N_cosmics=100)
     # Add readnoise
     imdata .+= rand(rng, Normal(0, 10), (N, N))
 
-	clean_image = T.(imdata)
-	
+    clean_image = T.(imdata)
+
     # Add Nc fake cosmic rays
     crmask = falses((N, N))
-	for i in 1:N_cosmics
-    	cr_x = round(Int, rand(rng, Uniform(6, N - 5)))
-    	cr_y = round(Int, rand(rng, Uniform(6, N - 5)))
-    	cr_brightnesses = rand(rng, Uniform(1000, 30000))
-    	imdata[cr_y, cr_x] += cr_brightnesses
-    	crmask[cr_y, cr_x] = true
-	end
+    for i in 1:N_cosmics
+        cr_x = round(Int, rand(rng, Uniform(6, N - 5)))
+        cr_y = round(Int, rand(rng, Uniform(6, N - 5)))
+        cr_brightnesses = rand(rng, Uniform(1000, 30000))
+        imdata[cr_y, cr_x] += cr_brightnesses
+        crmask[cr_y, cr_x] = true
+    end
 
     # Make a mask where the detected cosmic rays should be
     return (image=T.(imdata), clean_image, mask=crmask)

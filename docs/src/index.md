@@ -16,8 +16,9 @@ Laplacian cosmic-ray detection (L.A.Cosmic) in pure Julia.
 
 To use the LACosmic library, first install it using `Pkg`
 
-```julia
-julia> ]add LACosmic
+```julia-repl
+julia> ] # pressing ']' should drop you into pkg-mode
+pkg> add LACosmic
 ```
 
 ## Usage
@@ -38,7 +39,7 @@ clean_image, mask = lacosmic(image)
 
 This code has been benchmarked against the Cython implementation in [Astro-SCRAPPY](https://github.com/astropy/astroscrappy). This benchmark simply computes the time it takes to run the LACosmic algorithm with different image sizes. The size is the length of one dimension of the image, so the expected scaling should be ``\propto N^2``. The code can be found in `bench/benchmark.jl`. Here is the information for my system-
 
-```julia
+```plain
 Julia Version 1.6.0
 Commit f9720dc2eb* (2021-03-24 12:55 UTC)
 Platform Info:

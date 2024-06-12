@@ -2,7 +2,9 @@ using LACosmic
 using Documenter
 
 DocMeta.setdocmeta!(LACosmic, :DocTestSetup, :(using LACosmic); recursive=true)
+
 include("pages.jl")
+
 makedocs(;
     modules=[LACosmic],
     authors="Miles Lucas <mdlucas@hawaii.edu> and contributors",
@@ -13,7 +15,7 @@ makedocs(;
         canonical="https://juliaastro.github.io/LACosmic.jl",
         assets=String[],
     ),
-    pages=pages
+    pages=pages,
 )
 
 deploydocs(;

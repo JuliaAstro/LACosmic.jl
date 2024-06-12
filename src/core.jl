@@ -5,7 +5,7 @@ const MEDFILT5_KERNEL = Kernel{(-2:2,-2:2)}(@inline w -> median(Tuple(w)))
 const MEDFILT7_KERNEL = Kernel{(-3:3,-3:3)}(@inline w -> median(Tuple(w)))
 
 """
-    lacosmic(data::AbstractMatrix; 
+    lacosmic(data::AbstractMatrix;
         noise=nothing,
         gain=1,
         background=0,
@@ -18,17 +18,23 @@ const MEDFILT7_KERNEL = Kernel{(-3:3,-3:3)}(@inline w -> median(Tuple(w)))
         saturation_level=2^16,
         block_size=2)
 
-Laplacian cosmic ray detection (LACosmic). This algorithm implements the algorithm presented in [lacosmicx](https://github.com/cmccully/lacosmicx). The return values are the cleaned image and the bad pixel mask. The image cleaning is done via median interpolation.
+Laplacian cosmic ray detection (LACosmic). This algorithm implements the
+algorithm presented in [lacosmicx](https://github.com/cmccully/lacosmicx).
+The return values are the cleaned image and the bad pixel mask. The image
+cleaning is done via median interpolation.
 
 # Parameters
-- `noise` is the pre-determined estimate of the data noise (square root of variance), if any
+- `noise` is the pre-determined estimate of the data noise
+  (square root of variance), if any
 - `gain` is the image gain in electrons per data number
 - `background` is pre-determined image background, if any
 - `readnoise` is the read noise of the image in electrons
 - `mask` is an input bad pixel mask, where `true` represents a bad pixel
 - `sigma_clip` is the Laplacian signal-to-noise ratio for flagging bad pixels
-- `contrast` is the minimum contrast required to flag a bad pixel in the ratio of the Laplacian image to the fine-structure image
-- `neighbor_thresh` is the fractional detection limit for cosmic rays surrounding other cosmic rays. Should be a number between 0 and 1.
+- `contrast` is the minimum contrast required to flag a bad pixel in the ratio
+  of the Laplacian image to the fine-structure image
+- `neighbor_thresh` is the fractional detection limit for cosmic rays
+  surrounding other cosmic rays. Should be a number between 0 and 1.
 - `maxiter` is the maximum number of iterations used for detecting bad pixels
 - `saturation_level` is the saturation value in electrons
 - `block_size` is the subsampling factor for the Laplacian filter image.
@@ -41,7 +47,8 @@ julia> clean_image, mask = lacosmic(image, gain=4);
 ```
 
 # References
-> [van Dokkum, P.G. (2001)](https://ui.adsabs.harvard.edu/abs/2001PASP..113.1420V/abstract) - "Cosmic-Ray Rejection by Laplacian Edge Detection"
+> [van Dokkum, P.G. (2001)](https://ui.adsabs.harvard.edu/abs/2001PASP..113.1420V/abstract) -
+> "Cosmic-Ray Rejection by Laplacian Edge Detection"
 """
 function lacosmic(
         data::AbstractMatrix{T};
@@ -68,7 +75,7 @@ function lacosmic(
     else # noise inferred
         clean_var = @. clean_image + readnoise^2
     end
-    
+
 
     # update mask with saturated stars
     background_img = map(MEDFILT5_KERNEL, extend(gain_corrected, ExtensionReplicate()))
@@ -110,7 +117,7 @@ function lacosmic(
         map!(MEDFILT7_KERNEL, med7, extend(med3, ExtensionReplicate()))
         # clip fine structure image since it is a divisor (similar to IRAF)
         @. f = max((med3 - med7) / sqrt(var_img + background * gain), T(0.01))
-        
+
         # find candidate cosmic rays
         @. cosmics = !mask & (snr_prime > sigma_clip) & ((snr_prime / f) > contrast)
 
@@ -124,7 +131,7 @@ function lacosmic(
         ray_mask .|= cosmics
         num_cosmics = count(cosmics)
         @debug "iteration $iteration: found $num_cosmics bad pixels this iteration"
-        
+
         # if no more cosmics, break
         if iszero(num_cosmics)
             break

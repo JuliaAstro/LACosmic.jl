@@ -10,7 +10,10 @@ end
 """
     LACosmic.subsample(array, block_size=2)
 
-Subsample `array` by the given factor without copying or allocating. This effectively treats each pixel as `block_size` x `block_size` pixels. The value of each pixel is not normalized or averaged. This is a view into the parent array, and if the data was changed this view would change subsequently.
+Subsample `array` by the given factor without copying or allocating. This
+effectively treats each pixel as `block_size` x `block_size` pixels. The value
+of each pixel is not normalized or averaged. This is a view into the parent
+array, and if the data was changed this view would change subsequently.
 
 # Examples
 
