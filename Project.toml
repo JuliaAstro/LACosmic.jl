@@ -1,7 +1,7 @@
 name = "LACosmic"
 uuid = "a188e134-b1c0-4a25-bc7e-93a99f0f0e06"
 authors = ["Miles Lucas <mdlucas@hawaii.edu> and contributors"]
-version = "0.1.0"
+version = "0.1.1"
 
 [deps]
 StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
