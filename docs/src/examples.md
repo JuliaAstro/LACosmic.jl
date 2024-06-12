@@ -27,7 +27,7 @@ function make_data(rng, N; N_sources=20, N_cosmics=20)
         y = rand(rng, Uniform(1, N + 1))
         brightness = rand(rng, Uniform(1000, 30000)) / (2π * 3.5^2)
         model = gaussian(;x, y, fwhm=3.5, amp=brightness)
-        imdata .+= model[axes(imdata)...]
+        imdata .+= model.(axes(imdata)...)
     end
 
     # Add the poisson noise

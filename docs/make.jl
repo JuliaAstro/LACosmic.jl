@@ -1,5 +1,6 @@
 using LACosmic
 using Documenter
+using Documenter.Remotes: GitHub
 
 DocMeta.setdocmeta!(LACosmic, :DocTestSetup, :(using LACosmic); recursive=true)
 
@@ -8,7 +9,7 @@ include("pages.jl")
 makedocs(;
     modules=[LACosmic],
     authors="Miles Lucas <mdlucas@hawaii.edu> and contributors",
-    repo="https://github.com/JuliaAstro/LACosmic.jl/blob/{commit}{path}#{line}",
+    repo=GitHub("JuliaAstro/LACosmic.jl"),
     sitename="LACosmic.jl",
     format=Documenter.HTML(;
         prettyurls=get(ENV, "CI", "false") == "true",
@@ -16,6 +17,7 @@ makedocs(;
         assets=String[],
     ),
     pages=pages,
+    checkdocs=:exports,
 )
 
 deploydocs(;
