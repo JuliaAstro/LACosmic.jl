@@ -59,8 +59,12 @@ jobs:
         with:
           version: '1'
       - uses: julia-actions/julia-buildpkg@v1
-      - run: julia -e 'using Pkg; Pkg.add("Aqua")'
-      - run: julia --project=@. -e 'using Aqua, LACosmic; Aqua.test_all(LACosmic, ambiguities=false)'
+      - shell: julia --color=yes {0}
+        run: using Pkg; Pkg.add("Aqua")
+      - shell: julia --color=yes --project=@. {0}
+        run: |
+          using Aqua, LACosmic
+          Aqua.test_all(LACosmic, ambiguities=false)
   docs:
     name: Documentation
     runs-on: ubuntu-latest
@@ -69,13 +73,7 @@ jobs:
       - uses: julia-actions/setup-julia@v2
         with:
           version: '1'
-      - run: |
-          julia --project=docs -e '
-            using Pkg
-            Pkg.develop(PackageSpec(path=pwd()))
-            Pkg.instantiate()'
-      - run: julia --project=docs docs/make.jl
+      - uses: julia-actions/julia-docdeploy@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
           GKSwstype: "100" # fix GKS socket error for plots made in @example blocks
