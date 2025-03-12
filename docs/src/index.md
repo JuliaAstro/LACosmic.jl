@@ -56,8 +56,8 @@ Environment:
 ```@example
 using CSV, DataFrames, Plots, LaTeXStrings # hide
 using LACosmic # hide
-benchdir = joinpath(dirname(pathof(LACosmic)), "..", "bench") # hide
-results = DataFrame(CSV.File(joinpath(benchdir, "benchmark_results.csv"))) # hide
+benchdir = joinpath(pkgdir(LACosmic), "bench") # hide
+results = CSV.read(joinpath(benchdir, "benchmark_results.csv"), DataFrame) # hide
 
 plot(results.N_data, [results.t_python results.t_julia]; # hide
     label=["Astro-SCRAPPY" "LACosmic.jl"], leg=:topleft, # hide
