@@ -16,3 +16,6 @@ Documenter = "1"
 LaTeXStrings = "1.3"
 PSFModels = "0.7"
 Plots = "1.23"
+
+[sources.LACosmic]
+path = ".."
