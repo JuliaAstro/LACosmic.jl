@@ -13,7 +13,7 @@ makedocs(;
     sitename="LACosmic.jl",
     format=Documenter.HTML(;
         prettyurls=get(ENV, "CI", "false") == "true",
-        canonical="https://juliaastro.github.io/LACosmic.jl",
+        canonical="https://juliaastro.org/LACosmic/stable/",
         assets=String[],
     ),
     pages=pages,
@@ -24,4 +24,5 @@ deploydocs(;
     repo="github.com/JuliaAstro/LACosmic.jl",
     devbranch="main",
     push_preview=true
+    versions = ["stable" => "v^", "v#.#"], # Restrict to minor releases
 )
