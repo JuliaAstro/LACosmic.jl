@@ -23,6 +23,6 @@ makedocs(;
 deploydocs(;
     repo="github.com/JuliaAstro/LACosmic.jl",
     devbranch="main",
-    push_preview=true
+    push_preview=true,
     versions = ["stable" => "v^", "v#.#"], # Restrict to minor releases
 )
