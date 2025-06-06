@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Examples · LACosmic.jl</title><meta name="title" content="Examples · LACosmic.jl"/><meta property="og:title" content="Examples · LACosmic.jl"/><meta property="twitter:title" content="Examples · LACosmic.jl"/><meta name="description" content="Documentation for LACosmic.jl."/><meta property="og:description" content="Documentation for LACosmic.jl."/><meta property="twitter:description" content="Documentation for LACosmic.jl."/><meta property="og:url" content="https://juliaastro.github.io/LACosmic.jl/examples/"/><meta property="twitter:url" content="https://juliaastro.github.io/LACosmic.jl/examples/"/><link rel="canonical" href="https://juliaastro.github.io/LACosmic.jl/examples/"/><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../search_index.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../"><img src="../assets/logo.svg" alt="LACosmic.jl logo"/></a><div class="docs-package-name"><span class="docs-autofit"><a href="../">LACosmic.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../">Home</a></li><li class="is-active"><a class="tocitem" href>Examples</a><ul class="internal"><li><a class="tocitem" href="#Setup"><span>Setup</span></a></li><li><a class="tocitem" href="#Removing-bad-pixels-with-LACosmic.jl"><span>Removing bad pixels with LACosmic.jl</span></a></li></ul></li><li><a class="tocitem" href="../api/">API/Reference</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Examples</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Examples</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/JuliaAstro/LACosmic.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/JuliaAstro/LACosmic.jl/blob/main/docs/src/examples.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Examples"><a class="docs-heading-anchor" href="#Examples">Examples</a><a id="Examples-1"></a><a class="docs-heading-anchor-permalink" href="#Examples" title="Permalink"></a></h1><h2 id="Setup"><a class="docs-heading-anchor" href="#Setup">Setup</a><a id="Setup-1"></a><a class="docs-heading-anchor-permalink" href="#Setup" title="Permalink"></a></h2><p>You will need the following packages installed to replicate this tutorial</p><pre><code class="language-julia-repl hljs">julia&gt; ] # pressing &#39;]&#39; should drop you into pkg-mode
+pkg&gt; add Distributions LACosmic Plots PSFModels</code></pre><h2 id="Removing-bad-pixels-with-LACosmic.jl"><a class="docs-heading-anchor" href="#Removing-bad-pixels-with-LACosmic.jl">Removing bad pixels with LACosmic.jl</a><a id="Removing-bad-pixels-with-LACosmic.jl-1"></a><a class="docs-heading-anchor-permalink" href="#Removing-bad-pixels-with-LACosmic.jl" title="Permalink"></a></h2><p>First, let&#39;s create some fake data with Gaussian sources</p><pre><code class="language-julia hljs">using Distributions
+using PSFModels: gaussian
+using Random
+
+function make_data(rng, N; N_sources=20, N_cosmics=20)
+    imdata = fill(200.0, (N, N))
+
+    # Add some fake sources
+    for _ in 1:N_sources
+        x = rand(rng, Uniform(1, N + 1))
+        y = rand(rng, Uniform(1, N + 1))
+        brightness = rand(rng, Uniform(1000, 30000)) / (2π * 3.5^2)
+        model = gaussian(;x, y, fwhm=3.5, amp=brightness)
+        imdata .+= model.(axes(imdata)...)
+    end
+
+    # Add the poisson noise
+    imdata .= rand.(rng, Poisson.(imdata))
+
+    # Add readnoise
+    imdata .+= rand(rng, Normal(0, 10), (N, N))
+
+    clean_image = copy(imdata)
+
+    # Add Nc fake cosmic rays
+    crmask = falses((N, N))
+    for i in 1:N_cosmics
+        cr_x = round(Int, rand(rng, Uniform(6, N - 5)))
+        cr_y = round(Int, rand(rng, Uniform(6, N - 5)))
+        cr_brightnesses = rand(rng, Uniform(1000, 30000))
+        imdata[cr_y, cr_x] += cr_brightnesses
+        crmask[cr_y, cr_x] = true
+    end
+
+    # Make a mask where the detected cosmic rays should be
+    return (image=imdata, clean_image, mask=crmask)
+end
+
+rng = MersenneTwister(808)
+data = make_data(rng, 201)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">(image = [170.2087856720863 187.49469665521792 … 221.19896556405303 202.87099187261302; 211.55829508818854 177.30442832081616 … 196.66652116315373 217.1615384412527; … ; 207.7234068656278 239.5194657153742 … 178.88040560478606 203.36915666154326; 201.32532419058822 209.79986780607024 … 213.03558525423801 183.38472950015483], clean_image = [170.2087856720863 187.49469665521792 … 221.19896556405303 202.87099187261302; 211.55829508818854 177.30442832081616 … 196.66652116315373 217.1615384412527; … ; 207.7234068656278 239.5194657153742 … 178.88040560478606 203.36915666154326; 201.32532419058822 209.79986780607024 … 213.03558525423801 183.38472950015483], mask = Bool[0 0 … 0 0; 0 0 … 0 0; … ; 0 0 … 0 0; 0 0 … 0 0])</code></pre><p>let&#39;s inspect it</p><pre><code class="language-julia hljs">using Plots
+
+function imshow(image; kwargs...)
+    axy, axx = axes(image)
+    heatmap(axy, axx, image;
+            aspect_ratio=1,
+            ticks=false,
+            xlim=extrema(axx),
+            ylim=extrema(axy),
+            kwargs...)
+end
+
+plot(
+    imshow(log10.(data.clean_image), title=&quot;original image&quot;),
+    imshow(log10.(data.image), title=&quot;image w/cosmics&quot;),
+    size=(775, 350)
+)</code></pre><img src="9590d230.svg" alt="Example block output"/><p>now we can clean it using <a href="../api/#LACosmic.lacosmic"><code>lacosmic</code></a></p><pre><code class="language-julia hljs">using LACosmic
+
+clean_image, mask = lacosmic(data.image, sigma_clip=6, contrast=5, neighbor_thresh=1)
+
+plot(
+    imshow(log10.(data.clean_image), title=&quot;original image&quot;),
+    imshow(log10.(clean_image), title=&quot;cleaned image&quot;),
+    size=(775, 350)
+)</code></pre><img src="a643ffae.svg" alt="Example block output"/><pre><code class="language-julia hljs">plot(
+    imshow(data.mask, title=&quot;true cosmics&quot;, cbar=false),
+    imshow(mask, title=&quot;detected cosmics&quot;, cbar=false),
+    size=(700, 400)
+)</code></pre><img src="400c31db.svg" alt="Example block output"/><pre><code class="language-julia hljs">data.mask == mask</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">true</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../">« Home</a><a class="docs-footer-nextpage" href="../api/">API/Reference »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.8.1 on <span class="colophon-date" title="Wednesday 12 March 2025 22:36">Wednesday 12 March 2025</span>. Using Julia version 1.11.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
